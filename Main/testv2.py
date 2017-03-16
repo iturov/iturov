@@ -70,15 +70,9 @@ def motors_write():
         ######-- Z AXIS ESC CONTROL --######
         #print dataArray
 	dataArrayInt = [int(dataArray[0]),int(dataArray[1])/2,int(dataArray[2])/2,0,0,0]
-	if(dataArrayInt[0] > 0):
-		dataArrayInt[0] += 500
-	if(dataArrayInt[0] < -0):
-		dataArrayInt[0] = 500 - dataArrayInt[0]
-	if(dataArrayInt[0] == 0):
-		dataArrayInt[0] = 500
-	servoDriver.set_servo_pulsewidth(servos[0],1000 + dataArrayInt[0])
+	servoDriver.set_servo_pulsewidth(servos[0],1750 + dataArrayInt[0])
         print("Servo {} {} micro pulses".format(servos, dataArray[0]))
-        servoDriver.set_servo_pulsewidth(servos[1],1000 + dataArrayInt[0])
+        servoDriver.set_servo_pulsewidth(servos[1],1750 + dataArrayInt[0])
         print("Servo {} {} micro pulses".format(servos, dataArray[0]))
         ######-- Z AXIS ESC CONTROL --######
         if(dataArrayInt[1] > 0):
@@ -162,5 +156,3 @@ if __name__ == "__main__":
     except:
         print "Client program quits...."
 client_socket.close()
-
-
