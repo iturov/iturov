@@ -9,6 +9,7 @@ import random
 import datetime
 
 servos = [24,23,4,17,27,22] #GPIO number
+lightDriver = 20
 #####---- MOTOR CONFIGURATION ----#####
 ###3#####4
 
@@ -47,12 +48,12 @@ def recv_data():
                 global dataArray
                 dataArray = recv_data.split(",")
 		print dataArray[0]
-
+		print dataArray[3]
 
 #dataArray[0] = throttle
 #dataArray[1] = foward/back
 #dataArray[2] = right/left
-#dataArray[3] = - not set
+#dataArray[3] = light
 #dataArray[4] = - not set
 #dataArray[5] = - not set
 #dataArray[6] = - not set
@@ -69,7 +70,10 @@ def motors_write():
    while 1:
         ######-- Z AXIS ESC CONTROL --######
         #print dataArray
-	dataArrayInt = [int(dataArray[0]),int(dataArray[1]),int(dataArray[2]),0,0,0]
+
+	dataArrayInt = [int(dataArray[0]),int(dataArray[1]),int(dataArray[2]),int(dataArray[3]),0,0]
+	servoDriver.set_servo_pulsewidth(lightDriver, 1200 + dataArrayInt[3]*7)
+	print dataArrayInt[3]
 	if(dataArrayInt[0] > 10):
 		dataArrayInt[0] += 500
 	if(dataArrayInt[0] < -10):
@@ -153,7 +157,7 @@ if __name__ == "__main__":
     print "Connecting to server at 192.168.1.100:11000"
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(('192.168.1.100', 11000))
+    client_socket.connect(('192.168.137.1', 8092))
     #host =  '192.168.1.102'
     #port = 11000
     #client_socket.connect(host, port)
