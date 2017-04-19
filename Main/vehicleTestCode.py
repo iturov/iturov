@@ -73,7 +73,6 @@ def motors_write():
 
 	dataArrayInt = [int(dataArray[0]),int(dataArray[1]),int(dataArray[2]),int(dataArray[3]),0,0,0]
 	servoDriver.set_servo_pulsewidth(lightDriver, 1200 + dataArrayInt[3])
-	print str(dataArrayInt[3]) + "hey"
 	if(dataArrayInt[0] > 10):
 		dataArrayInt[0] += 500
 	if(dataArrayInt[0] < -10):
