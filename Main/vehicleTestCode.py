@@ -1,5 +1,12 @@
-# The client program connects to server and sends data to other 
-# connected clients through the server
+##-ROV RASPBERRY PI'S SIDE CONTROL PROGRAM
+##-THIS PROGRAM COMMUNICATES TO GROUND CONTROL STATION DIRECT CONNECTED TO THE RASPBERRY, 
+##-EXECUTES MOVEMENT ALGORITHMS WITH RECEIVED DATA,
+##-CONTROLS ADDITIONAL PLUGINS WITH RECEIVED DATA
+##-SENDS FEEDBACK, SENSOR VALUES BACK TO GROUND CONTROL STATION
+
+##-FOR FURTHER SUPPORT VISIT: "www.github.com/iturov"
+##-THIS PROGRAM IS CURRENTLY UNDER DEVELOPMENT BY ISTANBUL TECHNICAL UNIVERSITY ROV TEAM
+
 import pigpio
 import socket
 import thread
@@ -8,25 +15,50 @@ import time
 import random
 import datetime
 
+##- SERVO CONTROLLERS' PINS CONNECTED -## BEGIN
+"PINS NUMBERS ARE GPIO PIN NUMBERS SEE: 'https://www.raspberrypi.org/documentation/usage/gpio/' "
 servos = [24,23,4,17,27,22] #GPIO number
-lightDriver = 20
-#####---- MOTOR CONFIGURATION ----#####
-###3#####4
+lightDriverPin = 20
+##- SERVO CONTROLLERS' PINS CONNECTED -## END
 
-#1#########2
+##- MOTOR CONFIGURATION -##  
+#---3-----4
 
-###5#####6
+#-1---------2
+
+#---5-----6
+
+##- GLOBAL DATAS
 dataArray = [0,0,0,0,0,0,0]
-servoDriver = pigpio.pi()
+servoDriver = pigpio.pi() 
+escOffNonRev = 1100 #NON-REVERSABLE ESC'S STOP VALUE
+escOffRev = 1750 #REVERSABLE ESC'S STOP VALUE
+##- GLOBAL DATAS
 
+##- ARMING CONTROLLERS -## BEGIN
 for i in range(0,200):
-	servoDriver.set_servo_pulsewidth(servos[0], 1000)
-	servoDriver.set_servo_pulsewidth(servos[1], 1000)
-	servoDriver.set_servo_pulsewidth(servos[2], 1000)
-	servoDriver.set_servo_pulsewidth(servos[3], 1000)
-	servoDriver.set_servo_pulsewidth(servos[4], 1000)
-	servoDriver.set_servo_pulsewidth(servos[5], 1000)
+	##- ALL SERVO'S TO BE SET "0"
+	##- FOR ARMING THE ESC'S BOTH REVERSABLE AND NON-REVERSABLE ESC'S SHOULD BE ARMED WITH 1000-1100 uS PULSE
+	servoDriver.set_servo_pulsewidth(servos[0], escOffRev) 
+	servoDriver.set_servo_pulsewidth(servos[1], escOffRev)
+	servoDriver.set_servo_pulsewidth(servos[2], escOffRev)
+	servoDriver.set_servo_pulsewidth(servos[3], escOffRev)
+	servoDriver.set_servo_pulsewidth(servos[4], escOffRev)
+	servoDriver.set_servo_pulsewidth(servos[5], escOffRev)
 	time.sleep(0.02)
+##- ARMING CONTROLLERS -## END
+
+##- INCOMING DATA DETAILS
+#dataArray[0] = throttle
+#dataArray[1] = foward/back
+#dataArray[2] = right/left
+#dataArray[3] = light value (0 - 700)
+#dataArray[4] = - not set
+#dataArray[5] = - not set
+#dataArray[6] = - not set
+#...
+#..
+#.
 
 def recv_data():
     "Receive data from other clients connected to server"
@@ -50,98 +82,74 @@ def recv_data():
 		print dataArray[0]
 		print dataArray[3]
 
-#dataArray[0] = throttle
-#dataArray[1] = foward/back
-#dataArray[2] = right/left
-#dataArray[3] = light
-#dataArray[4] = - not set
-#dataArray[5] = - not set
-#dataArray[6] = - not set
-#...
-#..
-#.
 
 
 
-#pulsewidth can only set between 500-2500
+def execute_plugins():
+	##- LIGHT DRIVER -## BEGIN
+	servoDriver.set_servo_pulsewidth(lightDriverPin, 1200 + int(dataArray[3]))
+	##- LIGHT DRIVER -## END
 
-#try:
+
+
+##- pulsewidth can only set between 500-2500, SHOULDN'T cross the line!
 def motors_write():
-   while 1:
-        ######-- Z AXIS ESC CONTROL --######
-        #print dataArray
+   while 1: #CREATE AN INFINITE LOOP
+    ##- INCOMING DATA STRING TO INTEGER CONVERSION	-## BEGIN   
+	dataArrayInt = [int(dataArray[0]),int(dataArray[1]),int(dataArray[2]),int(dataArray[3]),int(dataArray[4]),int(dataArray[5]),int(dataArray[6])]
+	##- INCOMING DATA STRING TO INTEGER CONVERSION	-## END
 
-	dataArrayInt = [int(dataArray[0]),int(dataArray[1]),int(dataArray[2]),int(dataArray[3]),0,0,0]
-	servoDriver.set_servo_pulsewidth(lightDriver, 1200 + dataArrayInt[3])
-	if(dataArrayInt[0] > 10):
-		dataArrayInt[0] += 500
-	if(dataArrayInt[0] < -10):
-		dataArrayInt[0] *= -1
-	if(dataArrayInt[0] == 3):
-		dataArrayInt[0] = 500
-	servoDriver.set_servo_pulsewidth(servos[0],1000 + dataArrayInt[0])
-        print("Servo {} {} micro pulses".format(servos, dataArray[0]))
-        servoDriver.set_servo_pulsewidth(servos[1],1000 + dataArrayInt[0])
-        print("Servo {} {} micro pulses".format(servos, dataArray[0]))
-        ######-- Z AXIS ESC CONTROL --######
-	dataArray[1] = 0
-	dataArray[2] = 0
-        if(dataArray[1] > 0):
-            	foward = dataArray[1]
-            	back = 0
-        if(dataArray[1] < 0):
-            	foward = 0
-            	back = -dataArray[1]
-        if(dataArray[2] > 0):
-           	right = dataArray[2]
-            	left = 0
-        if(dataArray[2] < 0):
-            	right = 0
-            	left = -dataArray[2]
-	if(dataArray[1] == 0):
+	##- Z AXIS ESC CONTROL -## BEGIN
+	servoDriver.set_servo_pulsewidth(servos[0],escOffRev + dataArrayInt[0])
+    servoDriver.set_servo_pulsewidth(servos[1],escOffRev + dataArrayInt[0])
+    ##- Z AXIS ESC CONTROL -## END
+	
+	##- ANALYSING INCOMING DATA-## BEGIN
+
+	##--##- DECLERATION OF AXIS/DIRECTION VALUES -## BEGIN
+	foward = 0
+	back = 0
+	right = 0
+	left = 0
+	##--##- DECLERATION OF AXIS/DIRECTION VALUES-## END
+
+	if(dataArrayInt[1] > 0):
+       	foward = dataArrayInt[1]
+       	back = 0
+    if(dataArrayInt[1] < 0):
+       	foward = 0
+       	back = -dataArrayInt[1]
+    if(dataArrayInt[2] > 0):
+       	right = dataArrayInt[2]
+        left = 0
+    if(dataArrayInt[2] < 0):
+        right = 0
+        left = -dataArrayInt[2]
+	
+	if(dataArrayInt[1] == 0):
 		foward = 0
 		back = 0
-	if(dataArray[2] == 0):
+	if(dataArrayInt[2] == 0):
 		right = 0
 		left = 0
-	back=0
-	foward=0
-	back=0  
-	left=0 
-        ######-- Y AXIS ESC CONTROL (FOWARD/BACK)--######
-        servoDriver.set_servo_pulsewidth(servos[4],1000 + int(back) + int(left))
-        print("Servo {} {} micro pulses".format(servos,  int(back) + int(left)))
-        servoDriver.set_servo_pulsewidth(servos[5],1000 +  int(back) + int(right))
-        print("Servo {} {} micro pulses".format(servos, int(back) + int(right)))
-        ######-- Y AXIS ESC CONTROL (FOWARD/BACK)--######
+	##- ANALYSING INCOMING DATA-## END
 
-        ######-- X AXIS ESC CONTROL (RIGHT/LEFT)--######
-        servoDriver.set_servo_pulsewidth(servos[2],1000 + int(foward) + int(left))
-        print("Servo {} {} micro pulses".format(servos,  int(foward) + int(left)))
-        servoDriver.set_servo_pulsewidth(servos[3],1000 + int(right) + int(foward))
-        print("Servo {} {} micro pulses".format(servos, int(foward) + int(right)))
-        ######-- X AXIS ESC CONTROL (BACK)--######
-	#thread.interrupt_main()        
+    ##- Y AXIS ESC CONTROL (FOWARD/BACK)-## BEGIN
+    servoDriver.set_servo_pulsewidth(servos[4],escOffNonRev + back + left)
+    servoDriver.set_servo_pulsewidth(servos[5],escOffNonRev +  back + right)
+    ##- Y AXIS ESC CONTROL (FOWARD/BACK)-##
 
-
-        time.sleep(0.02)
-   # switch all servos off
-#except KeyboardInterrupt:
-#    for s in servos:
- 
-#        servoDriver.set_servo_pulsewidth(s, 0);
- 
-#servoDriver.stop()
+    ##- X AXIS ESC CONTROL (RIGHT/LEFT)-## BEGIN
+    servoDriver.set_servo_pulsewidth(servos[2],escOffNonRev + foward + left)
+    servoDriver.set_servo_pulsewidth(servos[3],escOffNonRev + right + foward)
+    ##- X AXIS ESC CONTROL (BACK)-## END
+	time.sleep(0.02)
 
 def send_data():
-    #! sleep(0.05)
-    "Send data from other clients connected to server"
+    ##- SEND DATA TO SERVER
     while 1:
-        time.sleep(0.1)
-        #sleep( random.randint( 1, 6 ) )
-        #send_data = str(raw_input("Enter data to send (q or Q to quit):"))
-        #send_data = str(datetime.datetime.now())
-        send_data = str(random.randint(0,100))
+        time.sleep(0.1) ##- 
+        send_data = str(random.randint(0,100)) ##- SENDING RANDOM VALUES TO SERVER, THIS WILL BE CHANGED TO SENSOR VALUES!
         print "sending data..." + send_data + "\n"
         if send_data == "q" or send_data == "Q":
             client_socket.send(send_data)
@@ -150,21 +158,24 @@ def send_data():
         else:
             client_socket.send(send_data + "\n")
 
+
+
 if __name__ == "__main__":
 
-    print "*******TCP/IP Chat client program********"
-    print "Connecting to server at 192.168.1.100:11000"
-
+    print "*******TCP/IP ITUROV COMMUNICATION PROGRAM********"
+    print "Connecting to server at 192.168.137.1:8092"
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(('192.168.137.1', 8092))
-    #host =  '192.168.1.102'
-    #port = 11000
-    #client_socket.connect(host, port)
-    print "Connected to server at 192.168.1.100:11000"
+    client_socket.connect(('192.168.137.1', 8092)) # CONNECTING TO LOCALLY CONNECTED SERVER ON PORT 8092. 
+    ##- ON PORT 8091 CAMERA IS STREAMED
+    print "Connected to server at 192.168.137.1:8092"
 
-    thread.start_new_thread(recv_data,())
-    thread.start_new_thread(send_data,())
-    thread.start_new_thread(motors_write,())
+    ##- BEGIN THREADING FUNCTIONS SIMULTANEOUSLY -## BEGIN
+    thread.start_new_thread(recv_data,()) #RECEIVING DATA FROM THE SERVER
+    thread.start_new_thread(send_data,()) #SENDING DATA BACK TO SERVER
+    thread.start_new_thread(motors_write,()) #EXECUTING MOTOR CONTROL ALGORITHM
+    thread.start_new_thread(execute_plugins,()) #EXECUTE ADDITIONAL PLUGINS
+    ##- BEGIN THREADING FUNCTIONS SIMULTANEOUSLY -## END
+
     try:
         while 1:
             continue
