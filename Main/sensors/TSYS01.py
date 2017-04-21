@@ -101,4 +101,4 @@ class TSYS01(object):
         
         self.lastTemp=term1+term2+term3+term4+term5
         #return temperatiure but also store it in self.lastTemp
-return(self.lastTemp)
+        return(self.lastTemp)
