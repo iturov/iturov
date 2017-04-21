@@ -16,20 +16,12 @@ class Sensor(object):
         self.trigPin = trigPin
         self.echoPin = echoPin
         # Initializing Sensors
-        self.init_temp()
         self.init_pressure()
         self.init_jst()
         self.temperature = 0
         self.freshwater_depth = 0
         self.pressure_mb = 0
         self.distance = 0
-
-    def init_temp(self):
-        try:
-            self.temp_sensor = TSYS01.TSYS01(0x77)
-        except Exception:
-            print("Temperature sensor could not be initialized")
-            pass
 
     def init_pressure(self):
         try:
@@ -47,17 +39,11 @@ class Sensor(object):
         GPIO.setup(self.trigPin, GPIO.OUT)
         GPIO.setup(self.echoPin, GPIO.IN)
 
-    def read_temp(self):
-        try:
-            self.temperature = self.temp_sensor.read_temp()
-        except Exception:
-            print("Temperature sensor could not be read")
-            pass
-
     def read_pressure(self):
         if self.pressure_sensor.read():
             self.freshwater_depth = self.pressure_sensor.depth()
-            self.pressure_mb = self.pressure_sensor()
+            self.pressure_mb = self.pressure_sensor.pressure()
+            self.temperature = self.pressure_sensor.temperature()    
         else:
             print("Pressure sensor could not be read")
 
@@ -73,7 +59,7 @@ class Sensor(object):
             while GPIO.input(self.echoPin) == 0:
                 start_time = time.time()
 
-            while GPIO.input(sel.echoPin) == 1:
+            while GPIO.input(self.echoPin) == 1:
                 stop_time = time.time()
 
             time_elapsed = stop_time - start_time
@@ -83,12 +69,10 @@ class Sensor(object):
             print("Ultrasonic sensor could not be read")
 
     def run(self):
-        self.read_temp()
         self.read_pressure()
         self.read_jst()
 
     def debug(self):
-        self.read_temp()
         self.read_pressure()
         self.read_jst()
         print("Pressure: %0.1f mbar\tDepth: %0.2f m\tTemp: %0.1f C\t Distance: %0.1f cm") % (
