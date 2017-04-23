@@ -8,7 +8,7 @@ class SerialNode(object):
     def __init__(self):
         self.ports = glob('/dev/ttyUSB*')
         self.serials = []
-        self.msg = None
+        self.msg = 0
         self.add_serials()
         
     def add_serials(self):
@@ -20,10 +20,11 @@ class SerialNode(object):
                 print e
 
     def read_data(self):
-        if self.serials[0].inWaiting:
-            self.serials[0].flush()
-            try:
-                self.msg = self.serials[0].readline().split("\r\n")
-            except Exception:
-            	print("Cannot read messages from serial")
-                pass          
+        if self.serials:
+            if self.serials[0].inWaiting:
+                self.serials[0].flush()
+                try:
+                    self.msg = self.serials[0].readline().split("\r\n")
+                except Exception:
+            	    print("Cannot read messages from serial")
+                    pass          
