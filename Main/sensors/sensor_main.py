@@ -96,56 +96,56 @@ def execute_plugins():
 
 ##- pulsewidth can only set between 500-2500, SHOULDN'T cross the line!
 def motors_write():
-   while 1: #CREATE AN INFINITE LOOP
+   	while 1: #CREATE AN INFINITE LOOP
     ##- INCOMING DATA STRING TO INTEGER CONVERSION	-## BEGIN   
-	dataArrayInt = [int(dataArray[0]),int(dataArray[1]),int(dataArray[2]),int(dataArray[3]),int(dataArray[4]),int(dataArray[5]),int(dataArray[6])]
+		dataArrayInt = [int(dataArray[0]),int(dataArray[1]),int(dataArray[2]),int(dataArray[3]),int(dataArray[4]),int(dataArray[5]),int(dataArray[6])]
 	##- INCOMING DATA STRING TO INTEGER CONVERSION	-## END
 
 	##- Z AXIS ESC CONTROL -## BEGIN
-	servoDriver.set_servo_pulsewidth(servos[0],escOffRev + dataArrayInt[0])
-    servoDriver.set_servo_pulsewidth(servos[1],escOffRev + dataArrayInt[0])
+		servoDriver.set_servo_pulsewidth(servos[0],escOffRev + dataArrayInt[0])
+    		servoDriver.set_servo_pulsewidth(servos[1],escOffRev + dataArrayInt[0])
     ##- Z AXIS ESC CONTROL -## END
 	
 	##- ANALYSING INCOMING DATA-## BEGIN
 
 	##--##- DECLERATION OF AXIS/DIRECTION VALUES -## BEGIN
-	foward = 0
-	back = 0
-	right = 0
-	left = 0
-	##--##- DECLERATION OF AXIS/DIRECTION VALUES-## END
-
-	if(dataArrayInt[1] > 0):
-       	foward = dataArrayInt[1]
-       	back = 0
-    if(dataArrayInt[1] < 0):
-       	foward = 0
-       	back = -dataArrayInt[1]
-    if(dataArrayInt[2] > 0):
-       	right = dataArrayInt[2]
-        left = 0
-    if(dataArrayInt[2] < 0):
-        right = 0
-        left = -dataArrayInt[2]
-	
-	if(dataArrayInt[1] == 0):
 		foward = 0
 		back = 0
-	if(dataArrayInt[2] == 0):
 		right = 0
 		left = 0
-	##- ANALYSING INCOMING DATA-## END
+	##--##- DECLERATION OF AXIS/DIRECTION VALUES-## END
+
+		if(dataArrayInt[1] > 0):
+       			foward = dataArrayInt[1]
+       			back = 0
+    		if(dataArrayInt[1] < 0):
+       			foward = 0
+       			back = -dataArrayInt[1]
+    		if(dataArrayInt[2] > 0):
+       			right = dataArrayInt[2]
+        		left = 0
+    		if(dataArrayInt[2] < 0):
+        		right = 0
+        		left = -dataArrayInt[2]
+	
+		if(dataArrayInt[1] == 0):
+			foward = 0
+			back = 0
+		if(dataArrayInt[2] == 0):
+			right = 0
+			left = 0
+		##- ANALYSING INCOMING DATA-## END
 
     ##- Y AXIS ESC CONTROL (FOWARD/BACK)-## BEGIN
-    servoDriver.set_servo_pulsewidth(servos[4],escOffNonRev + back + left)
-    servoDriver.set_servo_pulsewidth(servos[5],escOffNonRev +  back + right)
+    		servoDriver.set_servo_pulsewidth(servos[4],escOffNonRev + back + left)
+    		servoDriver.set_servo_pulsewidth(servos[5],escOffNonRev +  back + right)
     ##- Y AXIS ESC CONTROL (FOWARD/BACK)-##
 
     ##- X AXIS ESC CONTROL (RIGHT/LEFT)-## BEGIN
-    servoDriver.set_servo_pulsewidth(servos[2],escOffNonRev + foward + left)
-    servoDriver.set_servo_pulsewidth(servos[3],escOffNonRev + right + foward)
+    		servoDriver.set_servo_pulsewidth(servos[2],escOffNonRev + foward + left)
+    		servoDriver.set_servo_pulsewidth(servos[3],escOffNonRev + right + foward)
     ##- X AXIS ESC CONTROL (BACK)-## END
-	time.sleep(0.02)
+		time.sleep(0.02)
 
 def send_data():
     ##- SEND DATA TO SERVER
@@ -158,7 +158,7 @@ def send_data():
         dist = str(sensor.distance)
         # TEMPERATURE AND BLUETOOTH DATA
         serial_node.read_data()
-        arduino_data = serial_node.msg;
+        arduino_data = str(serial_node.msg)
         send_data = (pressure + "," + depth + "," + temp_normal + "," + dist + "," + arduino_data) 
         print "sending data..." + send_data + "\n"
         if send_data == "q" or send_data == "Q":
