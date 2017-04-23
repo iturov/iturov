@@ -24,7 +24,7 @@ class SerialNode(object):
             if self.serials[0].inWaiting:
                 self.serials[0].flush()
                 try:
-                    self.msg = self.serials[0].readline().split("\r\n")
+                    self.msg = self.serials[0].readline()
                 except Exception:
             	    print("Cannot read messages from serial")
                     pass          
