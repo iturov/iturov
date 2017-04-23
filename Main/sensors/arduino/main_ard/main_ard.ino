@@ -18,7 +18,7 @@ void loop() {
 
   sensor.read();
   
-  Serial.print(sensor.temperature()); 
+  Serial.println(sensor.temperature()); 
   
   delay(100);
 }
