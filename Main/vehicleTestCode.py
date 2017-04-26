@@ -18,8 +18,10 @@ import datetime
 ##- SERVO CONTROLLERS' PINS CONNECTED -## BEGIN
 "PINS NUMBERS ARE GPIO PIN NUMBERS SEE: 'https://www.raspberrypi.org/documentation/usage/gpio/' "
 servos = [24,23,4,17,27,22] #GPIO number
+robotServos = [21,20,16]
 #servos = [rightZ,leftZ,fowardLeft,fowardRight,backLeft,backRight] 
-lightDriverPin = 20
+#robotServos = [elbow1,elbow2,gripper]
+lightDriverPin = 12
 ##- SERVO CONTROLLERS' PINS CONNECTED -## END
 
 ##- MOTOR CONFIGURATION -##  
@@ -34,6 +36,8 @@ dataArray = [0,0,0,0,0,0,0,0,0]
 servoDriver = pigpio.pi() 
 escOffNonRev = 1100 #NON-REVERSABLE ESC'S STOP VALUE
 escOffRev = 1750 #REVERSABLE ESC'S STOP VALUE
+robotServoMax = 2000
+robotServoMin = 600
 ##- GLOBAL DATAS
 
 ##- ARMING CONTROLLERS -## BEGIN
@@ -86,9 +90,21 @@ def execute_plugins():
     while 1:
 		##- LIGHT DRIVER -## BEGIN
 	    servoDriver.set_servo_pulsewidth(lightDriverPin, 1200 + int(dataArray[3]))
-	    time.sleep(0.02)
 		##- LIGHT DRIVER -## END
-
+        elbowValue = [int(dataArray[4]),int(dataArray[5]),int(dataArray[6])]
+        for i in range(0,4):
+            if elbowValue[i] < robotServoMin:
+                elbowValue[i] = robotServoMin
+            if elbowValue[i] > robotServoMax:
+                elbowValue[i] = robotServoMax
+            if elbowValue[i] == 0
+                elbowValue[i] = 0
+            servoDriver.set_servo_pulsewidth(robotServos[i],elbowValue[i])
+        #servoDriver.set_servo_pulsewidth(robotServos[0],elbowValue[0])
+        #servoDriver.set_servo_pulsewidth(robotServos[1],elbowValue[1])
+        #servoDriver.set_servo_pulsewidth(robotServos[2],elbowValue[2])
+        time.sleep(0.02)
+        
 
 
 ##- pulsewidth can only set between 500-2500, SHOULDN'T cross the line!
@@ -142,7 +158,7 @@ def motors_write():
         if(dataArrayInt[2] == 0):
             right = 0
             left = 0
-
+    # messageBox.Show("Makine açılsın mı?"); :)
         yawP = 0
         yawN = 0
         if dataArrayInt[8] > 0:
