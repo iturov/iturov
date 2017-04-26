@@ -89,7 +89,7 @@ def recv_data():
 def execute_plugins():
     while 1:
 		##- LIGHT DRIVER -## BEGIN
-	    servoDriver.set_servo_pulsewidth(lightDriverPin, 1200 + int(dataArray[3]))
+        servoDriver.set_servo_pulsewidth(lightDriverPin, 1200 + int(dataArray[3]))
 		##- LIGHT DRIVER -## END
         elbowValue = [int(dataArray[4]),int(dataArray[5]),int(dataArray[6])]
         for i in range(0,4):
@@ -97,7 +97,7 @@ def execute_plugins():
                 elbowValue[i] = robotServoMin
             if elbowValue[i] > robotServoMax:
                 elbowValue[i] = robotServoMax
-            if elbowValue[i] == 0
+            if elbowValue[i] == 0:
                 elbowValue[i] = 0
             servoDriver.set_servo_pulsewidth(robotServos[i],elbowValue[i])
         #servoDriver.set_servo_pulsewidth(robotServos[0],elbowValue[0])
@@ -158,7 +158,6 @@ def motors_write():
         if(dataArrayInt[2] == 0):
             right = 0
             left = 0
-    # messageBox.Show("Makine açılsın mı?"); :)
         yawP = 0
         yawN = 0
         if dataArrayInt[8] > 0:
