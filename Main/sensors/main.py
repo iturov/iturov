@@ -1,5 +1,5 @@
 ##-ROV RASPBERRY PI'S SIDE CONTROL PROGRAM
-##-THIS PROGRAM COMMUNICATES TO GROUND CONTROL STATION DIRECT CONNECTED TO THE RASPBERRY, 
+##-THIS PROGRAM COMMUNICATES TO GROUND CONTROL STATION DIRECT CONNECTED TO THE RASPBERRY,
 ##-EXECUTES MOVEMENT ALGORITHMS WITH RECEIVED DATA,
 ##-CONTROLS ADDITIONAL PLUGINS WITH RECEIVED DATA
 ##-SENDS FEEDBACK, SENSOR VALUES BACK TO GROUND CONTROL STATION
@@ -21,12 +21,12 @@ from serial_class import *
 "PINS NUMBERS ARE GPIO PIN NUMBERS SEE: 'https://www.raspberrypi.org/documentation/usage/gpio/' "
 servos = [21,20,12,8,7,16] #GPIO number
 robotServos = [5,6,13]
-#servos = [rightZ,leftZ,fowardLeft,fowardRight,backLeft,backRight] 
+#servos = [rightZ,leftZ,fowardLeft,fowardRight,backLeft,backRight]
 #robotServos = [elbow1,elbow2,gripper]
 lightDriverPin = 19
 ##- SERVO CONTROLLERS' PINS CONNECTED -## END
 
-##- MOTOR CONFIGURATION -##  
+##- MOTOR CONFIGURATION -##
 #---3-----4
 
 #-1---------2
@@ -35,7 +35,7 @@ lightDriverPin = 19
 
 ##- GLOBAL DATAS
 dataArray = [0,0,0,0,0,0,0,0,0]
-servoDriver = pigpio.pi() 
+servoDriver = pigpio.pi()
 escOffNonRev = 1100 #NON-REVERSABLE ESC'S STOP VALUE
 escOffRev = 1750 #REVERSABLE ESC'S STOP VALUE
 robotServoMax = 2000
@@ -46,7 +46,7 @@ robotServoMin = 600
 for i in range(0,200):
 	##- ALL SERVO'S TO BE SET "0"
 	##- FOR ARMING THE ESC'S BOTH REVERSABLE AND NON-REVERSABLE ESC'S SHOULD BE ARMED WITH 1000-1100 uS PULSE
-    servoDriver.set_servo_pulsewidth(servos[0], escOffNonRev) 
+    servoDriver.set_servo_pulsewidth(servos[0], escOffNonRev)
     servoDriver.set_servo_pulsewidth(servos[1], escOffNonRev)
     servoDriver.set_servo_pulsewidth(servos[2], escOffNonRev)
     servoDriver.set_servo_pulsewidth(servos[3], escOffNonRev)
@@ -60,12 +60,12 @@ for i in range(0,200):
 #dataArray[1] = foward/back
 #dataArray[2] = right/left
 #dataArray[3] = light value (0 - 700)
-#dataArray[4] = - not set
-#dataArray[5] = - not set
-#dataArray[6] = - not set
-#...
-#..
-#.
+#dataArray[4] = elbow 1
+#dataArray[5] = elbow 2
+#dataArray[6] = elbow 3
+#dataArray[7] = roll
+#dataArray[8] = yaw
+##- INCOMING DATA DETAILS
 
 def recv_data():
     while 1:
@@ -86,7 +86,7 @@ def recv_data():
             global dataArray
             dataArray = recv_data.split(",")
             print dataArray[0]
-		
+
 
 def execute_plugins():
     while 1:
@@ -107,13 +107,13 @@ def execute_plugins():
         #servoDriver.set_servo_pulsewidth(robotServos[2],elbowValue[2])
         #print elbowValue[0]
         time.sleep(0.02)
-        
+
 
 
 ##- pulsewidth can only set between 500-2500, SHOULDN'T cross the line!
 def motors_write():
     while 1: #CREATE AN INFINITE LOOP
-   		##- INCOMING DATA STRING TO INTEGER CONVERSION	-## BEGIN   
+   		##- INCOMING DATA STRING TO INTEGER CONVERSION	-## BEGIN
         dataArrayInt = [int(dataArray[0]),-int(dataArray[1]),int(dataArray[2]),int(dataArray[3]),int(dataArray[4]),int(dataArray[5]),int(dataArray[6]),int(dataArray[7]),int(dataArray[8])]
 		##- INCOMING DATA STRING TO INTEGER CONVERSION	-## END
 		#print dataArrayInt[7]
@@ -133,16 +133,16 @@ def motors_write():
         servoDriver.set_servo_pulsewidth(servos[0],escOffRev + dataArrayInt[0] + rollN)
         servoDriver.set_servo_pulsewidth(servos[1],escOffRev + dataArrayInt[0] + rollP)
 	    ##- Z AXIS ESC CONTROL -## END
-		
+
 		##- ANALYSING INCOMING DATA-## BEGIN
-	
+
 		##--##- DECLERATION OF AXIS/DIRECTION VALUES -## BEGIN
         foward = 0
         back = 0
         right = 0
         left = 0
 		##--##- DECLERATION OF AXIS/DIRECTION VALUES-## END
-	
+
         if(dataArrayInt[1] > 0):
             foward = dataArrayInt[1]
             back = 0
@@ -170,12 +170,12 @@ def motors_write():
             yawN = -dataArrayInt[8]
             yawP = 0
 	##- ANALYSING INCOMING DATA-## END
-	
+
 	    ##- Y AXIS ESC CONTROL (FOWARD/BACK)-## BEGIN
         servoDriver.set_servo_pulsewidth(servos[4],escOffNonRev + back + left + yawP)
         servoDriver.set_servo_pulsewidth(servos[5],escOffNonRev +  back + right + yawN)
 	    ##- Y AXIS ESC CONTROL (FOWARD/BACK)-##
-	
+
 	    ##- X AXIS ESC CONTROL (RIGHT/LEFT)-## BEGIN
         servoDriver.set_servo_pulsewidth(servos[2],escOffNonRev + foward + left + yawN)
         servoDriver.set_servo_pulsewidth(servos[3],escOffNonRev + right + foward + yawP)
@@ -206,7 +206,7 @@ if __name__ == "__main__":
     print "*******TCP/IP ITUROV COMMUNICATION PROGRAM********"
     print "Connecting to server at 192.168.137.1:8092"
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(('192.168.137.1', 8092)) # CONNECTING TO LOCALLY CONNECTED SERVER ON PORT 8092. 
+    client_socket.connect(('192.168.137.1', 8092)) # CONNECTING TO LOCALLY CONNECTED SERVER ON PORT 8092.
     	##- ON PORT 8091 CAMERA IS STREAMED
     print "Connected to server at 192.168.137.1:8092"
     sensor = Sensor(11, 4)
@@ -217,11 +217,10 @@ if __name__ == "__main__":
     thread.start_new_thread(motors_write,()) #EXECUTING MOTOR CONTROL ALGORITHM
     thread.start_new_thread(execute_plugins,()) #EXECUTE ADDITIONAL PLUGINS
 	    ##- BEGIN THREADING FUNCTIONS SIMULTANEOUSLY -## END
-	
+
     try:
         while 1:
             continue
     except:
         print "Client program quits...."
 client_socket.close()
-
