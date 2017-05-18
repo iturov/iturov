@@ -3,20 +3,28 @@
 
 #CREATE CLASS
 class PID(object):
-    P = 0 # CREATE PROPORTIONAL VALUE
-    I = 0 # CREATE INTEGRAL VALUE
-    D = 0 # CREATE DERIVATIVE VALUE
-    Eprev = 0 # CREATE PREVIOUS ERROR VALUE
 
     def __init__(self):
+        self.P = 0 # CREATE PROPORTIONAL VALUE
+        self.I = 0 # CREATE INTEGRAL VALUE
+        self.D = 0 # CREATE DERIVATIVE VALUE
+        self.Eprev = 0 # CREATE PREVIOUS ERROR VALUE
+
         # INITIALIZE OBJECT
         #...
 
     def calculate(self,setPoint,feedBack, Kp, Ki, Kd, dt):
-        error = setPoint - feedBack
-        P = error * Kp # CALCULATE P TERM
-        I = I + error * Ki * dt # CALCULATE I TERM
-        D = (error - Eprev) * Kd / dt # CALCULATE D TERM
-        Eprev = error # UPDATE PREVIOUS ERROR BY NEW ERROR
+        self.setPoint = setPoint
+        self.feedBack = feedBack
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.dt = dt
+
+        self.error = self.setPoint - self.feedBack
+        self.P = self.error * self.Kp # CALCULATE P TERM
+        self.I = self.I + self.error * self.Ki * self.dt # CALCULATE I TERM
+        self.D = (self.error - self.Eprev) * self.Kd / self.dt # CALCULATE D TERM
+        self.Eprev = self.error # UPDATE PREVIOUS ERROR BY NEW ERROR
         # NOTE: "dt" IS THE LOOP TIME
-        return(P + I + D) # RETURN THE CALCULATED VALUE
+        return(self.P + self.I + self.D) # RETURN THE CALCULATED VALUE
