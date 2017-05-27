@@ -2,15 +2,19 @@ import socket
 import thread
 import sys
 import time
+
 from ..sensors.sensor_class import *
 from ..sensors.serial_class import *
 
 class Connection():
     dataArray = []
 
-    def __init__(self, trig, echo):
+    def __init__(self, trig, echo, port = 8092):
+        self.port = port
+        print "ITU ROV CLIENT PROGRAM STARTED"
+        print "CONNECTING TO SERVER AT 192.168.137.1:" port
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.connect(('192.168.137.1', 8092)) # CONNECTING TO LOCALLY CONNECTED SERVER ON PORT 8092.
+        self.client_socket.connect(('192.168.137.1', port)) # CONNECTING TO LOCALLY CONNECTED SERVER ON PORT 8092.
         self.trig = trig
         self.echo = echo
         self.sensor = Sensor(self.trig, self.echo)
@@ -21,7 +25,7 @@ class Connection():
         thread.start_new_thread(Connection.recv_data,())
         thread.start_new_thread(Connection.send_data,())
 
-    def send_data():
+    def send_data(self):
         ##- SEND DATA TO SERVER
         while True:
             time.sleep(0.1) ##-
@@ -54,7 +58,7 @@ class Connection():
                 break
             else:
                 dataArray = self.recv_data.split(",")
-                for i in range(0,len(dataArray))
-
-                    if dataArray[i] == "" # search for nulls
+                for i in range(0,len(dataArray)):
+                    if dataArray[i] == "": # search for nulls
                         dataArray[i] = "0" # replace nulls with "0"
+                print dataArrays
