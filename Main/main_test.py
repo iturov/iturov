@@ -1,7 +1,7 @@
 import sys
 import thread
-sys.append("/module/motorController")
-sys.append("/module/network")
+sys.path.append("/modules/motorController")
+sys.path.append("/modules/network")
 
 import controller as motor_controller
 import network as _network
@@ -11,7 +11,7 @@ servo_off_value = 0
 incoming_data = []
 
 
-def variable_control
+def variable_control():
     while True:
         incoming_data = _network.dataArray
         motor_controller.arrayInt = incoming_data
@@ -29,4 +29,4 @@ if True:
             continue
     except:
         print "Client program quits...."
-        _network.kill()
+_network.kill()

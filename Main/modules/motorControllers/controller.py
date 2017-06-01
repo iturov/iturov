@@ -44,8 +44,6 @@ def _run_thread():
 
 def run():
     thread.start_new_thread(_run_thread,())
-def kill():
-    client_socket.close()
 
 def _constrain(self, value, min = 0, max = 1000):
     if value > max:
