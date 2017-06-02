@@ -27,7 +27,7 @@ def _send_data():
         time.sleep(0.1) ##-
         #send_data = (pressure + "," + depth + "," + temp_normal + "," + dist + "," + arduino_data)
         send_data = "sending data 123"
-        print "sending data..." + send_data + "\n"
+        #print "sending data..." + send_data + "\n"
         client_socket.send(send_data + "\n")
 
 def _recv_data():
@@ -55,7 +55,7 @@ def _recv_data():
                 #dataArray[i] = int(array[i])
                 #dataArray = array
             dataArray = [int(x) for x in array]
-            print dataArray
+            #print dataArray
 
 def kill():
     global client_socket
