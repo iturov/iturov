@@ -12,7 +12,7 @@ roll_pid = pid
 # NOTE: in this algoritm a reversible motor library is created, uses 1500 us as an off VALUE
 servo_off_value = 1500
 depth_feedback = 0
-roll_feedback
+roll_feedback = 0
 servo_driver = pigpio.pi()
 arrayInt = [0,0,0,0,0,0,0,0,0,0,0,0,0]
 pins = [0,0,0,0,0,0]
@@ -22,7 +22,7 @@ def initialize(_pins = [1,2,3,4,5,6], _servo_off_value = 1500):
     global servo_off_value
     servo_off_value = _servo_off_value
     pins = _pins
-    for k in range(0,50):
+    for k in range(0, 30):
         for i in range(0,len(pins)):
             servo_driver.set_servo_pulsewidth(pins[i], servo_off_value)
         time.sleep(0.02)
@@ -33,11 +33,19 @@ def _run_thread():
         global arrayInt
         global pins
         #conversion
-        throttle = arrayInt[0]
-        fowardBack = arrayInt[1]
-        leftRight = arrayInt[2]
-        roll = arrayInt[7]
-        yaw = arrayInt[8]
+        if arrayInt:
+            throttle = arrayInt[0]
+            fowardBack = arrayInt[1]
+            leftRight = arrayInt[2]
+            roll = arrayInt[3]
+            yaw = arrayInt[4]
+        else:
+            throttle = 0
+            fowardBack = 0
+            leftRight = 0
+            roll = 0
+            yaw = 0
+
         # Z-axis
         motors[0] = (-throttle) + (-roll) # motor1
         motors[1] = (-throttle) + (roll) # motor2
@@ -50,7 +58,7 @@ def _run_thread():
         for i in range(0,len(pins)):
             motors[i] = _constrain(motors[i], -500, 500)
             servo_driver.set_servo_pulsewidth(pins[i], servo_off_value + motors[i])
-        print motors
+#        print motors
         time.sleep(0.02)
 
 def run(pid_state = 0): # NOTE: set pid_state to 1 to enable pid controller
@@ -84,7 +92,7 @@ def _run_with_pid():
         for i in range(2,len(pins)):
             motors[i] = _constrain(motors[i], -500, 500)
             servo_driver.set_servo_pulsewidth(pins[i], servo_off_value + motors[i])
-        print motors
+#        print motors
         time.sleep(0.02)
 
 def _constrain(value, min = 0, max = 1000):

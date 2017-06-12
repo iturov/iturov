@@ -2,6 +2,7 @@ import socket
 import thread
 import sys
 import time
+
 from modules.sensors.sensor_class import *
 from modules.sensors.serial_class import *
 
@@ -27,22 +28,51 @@ def establish():
 
 def _send_data():
     ##- SEND DATA TO SERVER
-    while True:
+    while 0:
         global client_socket
-        global sensor
-        global serial_node
-        time.sleep(0.1) ##-
-
-        sensor.read_pressure()
-        pressure = str(sensor.pressure_mb)
-        depth = str(sensor.freshwater_depth)
-        temp_normal = str(sensor.temperature)
-        # TEMPERATURE AND BLUETOOTH DATA
-        serial_node.read_data()
-        arduino_data = str(serial_node.msg)
-        send_data = (pressure + "," + depth + "," + temp_normal + "," + arduino_data)
-        print "Data Sending: " + send_data + "\n"
+        time.sleep(0.01) ##-
+        #send_data = (pressure + "," + depth + "," + temp_normal + "," + dist + "," + arduino$
+        send_data = "sending data 123"
+        #print "sending data..." + send_data + "\n"
         client_socket.send(send_data + "\n")
+
+    while 1:
+        try:
+            global client_socket
+            global sensor
+            global serial_node
+            time.sleep(0.01) ##-
+            depth = "0"
+            pressure = "0"
+            temp_normal = "0"
+            arduino_data = "0"
+
+            try:
+                sensor.read_pressure()
+                pressure = str(sensor.pressure_mb)
+                depth = str(sensor.freshwater_depth)
+                temp_normal = str(sensor.temperature)
+                # TEMPERATURE AND BLUETOOTH DATA
+                serial_node.read_data()
+                arduino_data = str(serial_node.msg)
+                pass
+            except:
+                pass
+
+            if pressure == "":
+                pressure = "0"
+            if depth == "":
+                depth = "0"
+            if temp_normal == "":
+                temp_normal = "0"
+            if arduino_data == "":
+                arduino_data = "0"        
+
+            send_data = "data" + "," + pressure + "," + depth + "," + temp_normal + "," + arduino_data
+            #print "Data Sending: " + send_data + "\n"
+            client_socket.send(send_data + "\n")
+        except:
+            pass
 
 def _recv_data():
     while True:

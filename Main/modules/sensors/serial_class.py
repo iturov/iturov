@@ -27,7 +27,8 @@ class SerialNode(object):
                     self.msg  = self.serials[0].readline().decode().strip()
                 except Exception:
             	    print("Cannot read messages from serial")
-                    pass
+                    self.msg = "0"
 
     def write_data(self, message):
-        self.serials[0].write(message)
+        if self.serials:
+            self.serials[0].write(message)

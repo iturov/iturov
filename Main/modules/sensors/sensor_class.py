@@ -31,7 +31,7 @@ class Sensor(object):
             print("Pressure sensor could not be initialized")
             pass
 
-    def init_jst(self):
+    #def init_jst(self):
         # GPIO Mode (BOARD / BCM)
         #GPIO.setmode(GPIO.BCM)
 
@@ -46,6 +46,9 @@ class Sensor(object):
             self.temperature = self.pressure_sensor.temperature()
         else:
             print("Pressure sensor could not be read")
+            self.freshwater_depth = "0"
+            self.pressure_mb = "0"
+            self.temperature = "0"
 
     def read_jst(self):
         try:
