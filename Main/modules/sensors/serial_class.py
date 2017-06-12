@@ -10,7 +10,7 @@ class SerialNode(object):
         self.serials = []
         self.msg = 0
         self.add_serials()
-        
+
     def add_serials(self):
         print("*** Adding serials...")
         for port in self.ports:
@@ -27,4 +27,7 @@ class SerialNode(object):
                     self.msg  = self.serials[0].readline().decode().strip()
                 except Exception:
             	    print("Cannot read messages from serial")
-                    pass          
+                    pass
+
+    def write_data(self, message):
+        self.serials[0].write(message)

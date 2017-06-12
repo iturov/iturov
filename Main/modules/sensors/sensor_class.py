@@ -11,17 +11,17 @@ import ms5837
 
 
 class Sensor(object):
-    def __init__(self, trigPin, echoPin):
+    def __init__(self):
         # Pin Configurations
-        self.trigPin = trigPin
-        self.echoPin = echoPin
+        #self.trigPin = trigPin
+        #self.echoPin = echoPin
         # Initializing Sensors
         self.init_pressure()
-        self.init_jst()
+        #self.init_jst()
         self.temperature = 0
         self.freshwater_depth = 0
         self.pressure_mb = 0
-        self.distance = 0
+        #self.distance = 0
 
     def init_pressure(self):
         try:
@@ -33,17 +33,17 @@ class Sensor(object):
 
     def init_jst(self):
         # GPIO Mode (BOARD / BCM)
-        GPIO.setmode(GPIO.BCM)
+        #GPIO.setmode(GPIO.BCM)
 
 # Set GPIO direction (IN / OUT)
-        GPIO.setup(self.trigPin, GPIO.OUT)
-        GPIO.setup(self.echoPin, GPIO.IN)
+        #GPIO.setup(self.trigPin, GPIO.OUT)
+        #GPIO.setup(self.echoPin, GPIO.IN)
 
     def read_pressure(self):
         if self.pressure_sensor.read():
             self.freshwater_depth = self.pressure_sensor.depth()
             self.pressure_mb = self.pressure_sensor.pressure()
-            self.temperature = self.pressure_sensor.temperature()    
+            self.temperature = self.pressure_sensor.temperature()
         else:
             print("Pressure sensor could not be read")
 
@@ -70,12 +70,12 @@ class Sensor(object):
 
     def run(self):
         self.read_pressure()
-        self.read_jst()
+        #self.read_jst()
 
     def debug(self):
         self.read_pressure()
-        self.read_jst()
-        print("Pressure: %0.1f mbar\tDepth: %0.2f m\tTemp: %0.1f C\t Distance: %0.1f cm") % (
+        #self.read_jst()
+        print("Pressure: %0.1f mbar\tDepth: %0.2f m\tTemp: %0.1f C") % (
             self.pressure_mb,
             self.freshwater_depth,
             self.temperature,

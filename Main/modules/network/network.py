@@ -2,6 +2,11 @@ import socket
 import thread
 import sys
 import time
+from modules.sensors.sensor_class import *
+from modules.sensors.serial_class import *
+
+sensor = Sensor()
+serial_node = SerialNode()
 
 dataArray = []
 array = []
@@ -24,10 +29,19 @@ def _send_data():
     ##- SEND DATA TO SERVER
     while True:
         global client_socket
+        global sensor
+        global serial_node
         time.sleep(0.1) ##-
-        #send_data = (pressure + "," + depth + "," + temp_normal + "," + dist + "," + arduino_data)
-        send_data = "sending data 123"
-        #print "sending data..." + send_data + "\n"
+
+        sensor.read_pressure()
+        pressure = str(sensor.pressure_mb)
+        depth = str(sensor.freshwater_depth)
+        temp_normal = str(sensor.temperature)
+        # TEMPERATURE AND BLUETOOTH DATA
+        serial_node.read_data()
+        arduino_data = str(serial_node.msg)
+        send_data = (pressure + "," + depth + "," + temp_normal + "," + arduino_data)
+        print "Data Sending: " + send_data + "\n"
         client_socket.send(send_data + "\n")
 
 def _recv_data():
