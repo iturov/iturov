@@ -18,6 +18,7 @@ def _variable_control():
     while True:
         incoming_data = _network.dataArray
         _motor_controller.arrayInt = incoming_data
+        _robot_controller.array = incoming_data
         if incoming_data:
             for i in range(0, 5):
                 _robot_controller.servo_values[i] = int(incoming_data[i + 1]) # NOTE: "3" WILL BE CHANGED TO THE POSITION WHERE ROBOT DATA BEGINS 

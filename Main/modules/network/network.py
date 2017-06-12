@@ -41,11 +41,13 @@ def _send_data():
             global client_socket
             global sensor
             global serial_node
-            time.sleep(0.01) ##-
+            time.sleep(0.1) ##-
             depth = "0"
             pressure = "0"
             temp_normal = "0"
             arduino_data = "0"
+#            serial_node.read_data()
+#            arduino_data = str(serial_node.msg)
 
             try:
                 sensor.read_pressure()
@@ -53,8 +55,6 @@ def _send_data():
                 depth = str(sensor.freshwater_depth)
                 temp_normal = str(sensor.temperature)
                 # TEMPERATURE AND BLUETOOTH DATA
-                serial_node.read_data()
-                arduino_data = str(serial_node.msg)
                 pass
             except:
                 pass
@@ -65,11 +65,11 @@ def _send_data():
                 depth = "0"
             if temp_normal == "":
                 temp_normal = "0"
-            if arduino_data == "":
-                arduino_data = "0"        
+            #if arduino_data == "":
+                #arduino_data = "0"        
 
             send_data = "data" + "," + pressure + "," + depth + "," + temp_normal + "," + arduino_data
-            #print "Data Sending: " + send_data + "\n"
+            print "Data Sending: " + send_data + "\n"
             client_socket.send(send_data + "\n")
         except:
             pass
