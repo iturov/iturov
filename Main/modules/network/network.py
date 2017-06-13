@@ -2,16 +2,18 @@ import socket
 import thread
 import sys
 import time
+import random
 
 from modules.sensors.sensor_class import *
 from modules.sensors.serial_class import *
 
 sensor = Sensor()
 serial_node = SerialNode()
-
+send_data = "0,0,0,0"
 dataArray = []
 array = []
 client_socket = None
+
 
 def initialize(_ip = '192.168.137.1',_port = 8092):
     global client_socket
@@ -23,56 +25,59 @@ def initialize(_ip = '192.168.137.1',_port = 8092):
     client_socket.connect((ip, port)) # CONNECTING TO LOCALLY CONNECTED SERVER ON PORT 8092.
 
 def establish():
+    thread.start_new_thread(_get_sensors,())
     thread.start_new_thread(_recv_data,())
     thread.start_new_thread(_send_data,())
 
+def _get_sensors():
+    while 1:
+        global sensor
+        global serial_node
+        global send_data
+        pressure = "0"
+        temp_normal = "0"
+        depth = "0"
+        a = 1
+        print "HELLO"
+#        try:
+        serial_node.read_data()
+        arduino_data = str(serial_node.msg)
+#        except:
+#            a = 2
+
+#        try:
+#            pass
+        #    sensor.read_pressure()
+        #    pressure = str(sensor.pressure_mb)
+        #    depth = str(sensor.freshwater_depth)
+        #    temp_normal = str(sensor.temperature)
+#        except:
+#            a = 3
+
+        send_data = pressure + "," + depth + "," + temp_normal + "," + arduino_data
+
 def _send_data():
+    i = 0
     ##- SEND DATA TO SERVER
     while 0:
         global client_socket
-        time.sleep(0.01) ##-
+        #time.sleep(0.01) ##-
         #send_data = (pressure + "," + depth + "," + temp_normal + "," + dist + "," + arduino$
-        send_data = "sending data 123"
+        send_data = "12,12,12,12,12,23," + str(i)
         #print "sending data..." + send_data + "\n"
         client_socket.send(send_data + "\n")
+        i += 1
 
     while 1:
-        try:
-            global client_socket
-            global sensor
-            global serial_node
-            time.sleep(0.1) ##-
-            depth = "0"
-            pressure = "0"
-            temp_normal = "0"
-            arduino_data = "0"
-#            serial_node.read_data()
-#            arduino_data = str(serial_node.msg)
-
-            try:
-                sensor.read_pressure()
-                pressure = str(sensor.pressure_mb)
-                depth = str(sensor.freshwater_depth)
-                temp_normal = str(sensor.temperature)
-                # TEMPERATURE AND BLUETOOTH DATA
-                pass
-            except:
-                pass
-
-            if pressure == "":
-                pressure = "0"
-            if depth == "":
-                depth = "0"
-            if temp_normal == "":
-                temp_normal = "0"
-            #if arduino_data == "":
-                #arduino_data = "0"        
-
-            send_data = "data" + "," + pressure + "," + depth + "," + temp_normal + "," + arduino_data
-            print "Data Sending: " + send_data + "\n"
+        global client_socket
+        global send_data
+        try:        
+#            print "Data Sending: " + send_data + "\n"
             client_socket.send(send_data + "\n")
         except:
             pass
+
+
 
 def _recv_data():
     while True:
@@ -98,7 +103,10 @@ def _recv_data():
                     array[i] = "0" # replace nulls with "0"
                 #dataArray[i] = int(array[i])
                 #dataArray = array
-            dataArray = [int(x) for x in array]
+            try:
+                dataArray = [int(x) for x in array]
+            except:
+                pass
             #print dataArray
 
 def kill():

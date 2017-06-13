@@ -23,10 +23,12 @@ def _variable_control():
             for i in range(0, 5):
                 _robot_controller.servo_values[i] = int(incoming_data[i + 1]) # NOTE: "3" WILL BE CHANGED TO THE POSITION WHERE ROBOT DATA BEGINS 
         print incoming_data
+        print _network.send_data
+        time.sleep(0.1)
 
 if True:
     thread.start_new_thread(_variable_control,())
-    _network.initialize('192.168.137.1')
+    _network.initialize('192.168.2.105')
     _network.establish()
 
     _motor_controller.initialize(motor_pins,servo_off_value)

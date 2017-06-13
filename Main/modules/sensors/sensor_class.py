@@ -41,9 +41,12 @@ class Sensor(object):
 
     def read_pressure(self):
         if self.pressure_sensor.read():
-            self.freshwater_depth = self.pressure_sensor.depth()
-            self.pressure_mb = self.pressure_sensor.pressure()
-            self.temperature = self.pressure_sensor.temperature()
+            try:    
+                self.freshwater_depth = self.pressure_sensor.depth()
+                self.pressure_mb = self.pressure_sensor.pressure()
+                self.temperature = self.pressure_sensor.temperature()
+            except:
+                pass        
         else:
             print("Pressure sensor could not be read")
             self.freshwater_depth = "0"

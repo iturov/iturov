@@ -206,10 +206,10 @@ if __name__ == "__main__":
     print "*******TCP/IP ITUROV COMMUNICATION PROGRAM********"
     print "Connecting to server at 192.168.137.1:8092"
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(('192.168.137.1', 8092)) # CONNECTING TO LOCALLY CONNECTED SERVER ON PORT 8092.
+    client_socket.connect(('192.168.2.105', 8092)) # CONNECTING TO LOCALLY CONNECTED SERVER ON PORT 8092.
     	##- ON PORT 8091 CAMERA IS STREAMED
     print "Connected to server at 192.168.137.1:8092"
-    sensor = Sensor(11, 4)
+    sensor = Sensor()
     serial_node = SerialNode()
 	    ##- BEGIN THREADING FUNCTIONS SIMULTANEOUSLY -## BEGIN
     thread.start_new_thread(recv_data,()) #RECEIVING DATA FROM THE SERVER
