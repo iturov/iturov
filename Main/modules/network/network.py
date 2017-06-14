@@ -13,7 +13,9 @@ send_data = "0,0,0,0"
 dataArray = []
 array = []
 client_socket = None
-
+arduino_data = "0"
+servo_values = [0, 0, 0, 0, 0]
+data_sending = "0,0,0,0,0"
 
 def initialize(_ip = '192.168.137.1',_port = 8092):
     global client_socket
@@ -28,31 +30,48 @@ def establish():
     thread.start_new_thread(_get_sensors,())
     thread.start_new_thread(_recv_data,())
     thread.start_new_thread(_send_data,())
+    thread.start_new_thread(_get_arduino,())
+    thread.start_new_thread(_run_servo, ())
+
+def _get_arduino():
+    while 1:
+        global serial_node
+        global arduino_data
+        global servo_values
+        serial_node.read_data()
+        arduino_data = str(serial_node.msg)
+        
+def _run_servo():
+    while 1:
+        global servo_values
+        global dataArray
+        global data_sending
+        global serial_node
+
+        servo_values[0] = dataArray[5]
+        servo_values[1] = dataArray[6]
+        servo_values[2] = dataArray[7]
+        servo_values[3] = dataArray[8]
+        servo_values[4] = dataArray[9]
+        data_sending = (str(servo_values[0]) + "," + str(servo_values[1]) + "," + str(servo_values[2]) + "," + str(servo_values[3]) + "," + str(servo_values[4]))
+#        data_sending = "hello"
+        serial_node.write_data(data_sending + "\n")
 
 def _get_sensors():
     while 1:
         global sensor
         global serial_node
         global send_data
+        global arduino_data
+
         pressure = "0"
         temp_normal = "0"
         depth = "0"
-        a = 1
-        print "HELLO"
-#        try:
-        serial_node.read_data()
-        arduino_data = str(serial_node.msg)
-#        except:
-#            a = 2
 
-#        try:
-#            pass
-        #    sensor.read_pressure()
-        #    pressure = str(sensor.pressure_mb)
-        #    depth = str(sensor.freshwater_depth)
-        #    temp_normal = str(sensor.temperature)
-#        except:
-#            a = 3
+        sensor.read_pressure()
+        pressure = str(sensor.pressure_mb)
+        depth = str(sensor.freshwater_depth)
+        temp_normal = str(sensor.temperature)
 
         send_data = pressure + "," + depth + "," + temp_normal + "," + arduino_data
 
