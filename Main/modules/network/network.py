@@ -10,7 +10,7 @@ from modules.sensors.serial_class import *
 sensor = Sensor()
 serial_node = SerialNode()
 send_data = "0,0,0,0"
-dataArray = []
+dataArray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 array = []
 client_socket = None
 arduino_data = "0"
@@ -38,8 +38,11 @@ def _get_arduino():
         global serial_node
         global arduino_data
         global servo_values
-        serial_node.read_data()
-        arduino_data = str(serial_node.msg)
+        try:
+            serial_node.read_data()
+            arduino_data = str(serial_node.msg)
+        except:
+            pass
         
 def _run_servo():
     while 1:
@@ -47,15 +50,14 @@ def _run_servo():
         global dataArray
         global data_sending
         global serial_node
-
-        servo_values[0] = dataArray[5]
-        servo_values[1] = dataArray[6]
-        servo_values[2] = dataArray[7]
-        servo_values[3] = dataArray[8]
-        servo_values[4] = dataArray[9]
-        data_sending = (str(servo_values[0]) + "," + str(servo_values[1]) + "," + str(servo_values[2]) + "," + str(servo_values[3]) + "," + str(servo_values[4]))
-#        data_sending = "hello"
-        serial_node.write_data(data_sending + "\n")
+        if dataArray:
+            servo_values[0] = dataArray[5]
+            servo_values[1] = dataArray[6]
+            servo_values[2] = dataArray[7]
+            servo_values[3] = dataArray[8]
+            servo_values[4] = dataArray[9]
+            data_sending = (str(servo_values[0]) + "," + str(servo_values[1]) + "," + str(servo_values[2]) + "," + str(servo_values[3]) + "," + str(servo_values[4]))
+            serial_node.write_data(data_sending + "\n")
 
 def _get_sensors():
     while 1:

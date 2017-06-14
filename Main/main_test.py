@@ -20,7 +20,8 @@ def _variable_control():
         _motor_controller.arrayInt = incoming_data
         _robot_controller.array = incoming_data
         print incoming_data
-        print _network.send_data
+        print _network.send_data + "\n"
+        print _network.data_sending
         time.sleep(0.01)
 
 if True:
