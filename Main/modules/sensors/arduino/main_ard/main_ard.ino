@@ -10,12 +10,13 @@ String bt_data = String('0');
 char inData[50];
 char inChar=-1;
 byte index = 0;
-int servoPins[5] = {0, 1, 2, 3, 4};
+int servoPins[5] = {4, 5, 6, 7, 9};
 
 
 void setup() {
   Serial.begin(115200);
   BTSerial.begin(9600);
+  Serial.setTimeout(50);
   //Wire.begin();
   //sensor.init();
   for (int i = 0; i < 5; i++){
@@ -86,19 +87,25 @@ while(Serial.available())
   servoArray[2] = ser3.toInt();
   servoArray[3] = ser4.toInt();
   servoArray[4] = ser5.toInt();
+  
+}
+
 
   for(int i = 0; i < 5; i++)
   {
-    // Serial.println(servoArray[i]);
+    //Serial.print(i);
+    //Serial.print(":");
+    //Serial.print(servoArray[i]);
+    //Serial.print("\t");
     servoDriver[i].writeMicroseconds(servoArray[i]); 
   }
-  
-}
+  // Serial.println("");
 
 
   //  Stable loop time 15 ms
   loopTime = micros() - timeBegin;
   delayMicroseconds(15000 - loopTime);
   timeBegin = micros();
-  Serial.println(cm); 
+  Serial.println(cm);
+  Serial.flush();
 }
