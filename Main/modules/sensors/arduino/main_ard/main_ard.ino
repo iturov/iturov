@@ -28,33 +28,41 @@ String splitString(String data, char separator, int index)
 void setup() {
   Serial.begin(115200);
   BTSerial.begin(9600);
-  Wire.begin();
-  sensor.init();
+  //Wire.begin();
+  //sensor.init();
   for (int i = 0; i < 5; i++){
     servoDriver[i].attach(servoPins[i]);
   }
 }
-
+int n = 0;
+int loopTime = 0;
+int timeBegin = 0;
+String serialData;
 void loop() {
-  int timeBegin = micros();
   if (BTSerial.available())
   {
     Serial.write(BTSerial.read());
   }
   else
   {
-    sensor.read();
-    String temp(sensor.temperature());
-    Serial.println(temp);
+    //sensor.read();
+    //String temp(sensor.temperature());
+    //Serial.println(temp);
   }
 
-  String serialData = Serial.readString();
+  float cm = 10650.08 * pow(analogRead(0),-0.935) - 10;
+
+  if (Serial.available()) serialData = Serial.readString();
   String serialArray[5];
   
   for(int i = 0; i < 5; i++){
     serialArray[i] = splitString(serialData, ",", i);
     servoDriver[i].write(serialArray[i].toInt());
   }
+  
   //  Stable loop time 15 ms
-  delayMicroseconds(15000 - (micros() - timeBegin));
+  loopTime = micros() - timeBegin;
+  delayMicroseconds(15000 - loopTime);
+  timeBegin = micros();
+  Serial.println(cm); 
 }
