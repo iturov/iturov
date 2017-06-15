@@ -36,7 +36,7 @@ String ser2;
 String ser3;
 String ser4;
 String ser5;
-int servoArray[5];
+int servoArray[5] = {0, 0, 0, 0, 0};
 
 int ind1; // , locations
 int ind2;
@@ -104,11 +104,11 @@ while(Serial.available())
     //Serial.print("\t");
     servoDriver[i].writeMicroseconds(servoArray[i]);
   }
-  servoDriver[0] = limit(servoDriver[0], 1800, 2300);
-  servoDriver[1] = limit(servoDriver[1], 500, 2400);
-  servoDriver[2] = limit(servoDriver[2], 500, 2400);
-  servoDriver[3] = limit(servoDriver[3], 1000, 1700);
-  servoDriver[4] = limit(servoDriver[4], 1000, 1700);
+  servoArray[0] = limit(servoArray[0], 1800, 2300);
+  servoArray[1] = limit(servoArray[1], 500, 2400);
+  servoArray[2] = limit(servoArray[2], 500, 2400);
+  servoArray[3] = limit(servoArray[3], 1000, 1700);
+  servoArray[4] = limit(servoArray[4], 1000, 1700);
 
 
   // Serial.println("");
