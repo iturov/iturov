@@ -12,7 +12,6 @@ char inChar=-1;
 byte index = 0;
 int servoPins[5] = {4, 5, 6, 7, 9};
 
-
 void setup() {
   Serial.begin(115200);
   BTSerial.begin(9600);
@@ -45,6 +44,12 @@ int ind3;
 int ind4;
 int ind5;
 
+int limit(int value, int minimum, int maximum){
+  if (value > maximum) value = maximum;
+  if (value < minimum) value = minimum;
+  return value;
+}
+
 void loop() {
   if (BTSerial.available())
   {
@@ -58,11 +63,11 @@ void loop() {
   }
 
   float cm = 10650.08 * pow(analogRead(0),-0.935) - 10;
-while(Serial.available()) 
+while(Serial.available())
 {
 
   servoData = Serial.readString();// read the incoming data as string
-  
+
   // Serial.println(servoData);
 
   ind1 = servoData.indexOf(',');  //finds location of first ,
@@ -87,7 +92,7 @@ while(Serial.available())
   servoArray[2] = ser3.toInt();
   servoArray[3] = ser4.toInt();
   servoArray[4] = ser5.toInt();
-  
+
 }
 
 
@@ -97,8 +102,15 @@ while(Serial.available())
     //Serial.print(":");
     //Serial.print(servoArray[i]);
     //Serial.print("\t");
-    servoDriver[i].writeMicroseconds(servoArray[i]); 
+    servoDriver[i].writeMicroseconds(servoArray[i]);
   }
+  servoDriver[0] = limit(servoDriver[0], 1800, 2300);
+  servoDriver[1] = limit(servoDriver[1], 500, 2400);
+  servoDriver[2] = limit(servoDriver[2], 500, 2400);
+  servoDriver[3] = limit(servoDriver[3], 1000, 1700);
+  servoDriver[4] = limit(servoDriver[4], 1000, 1700);
+
+
   // Serial.println("");
 
 
