@@ -9,7 +9,8 @@ from modules.roboticArmController import robot_controller
 _network = network
 _motor_controller = controller
 _robot_controller = robot_controller
-motor_pins = [17,18,27,25,16,21]
+#motor_pins = [17,18,27,25,16,21]
+motor_pins = [4, 18, 23, 24, 25, 12]
 servo_off_value = 1450
 incoming_data = []
 

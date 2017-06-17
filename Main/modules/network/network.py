@@ -16,7 +16,7 @@ client_socket = None
 arduino_data = "0"
 servo_values = [0, 0, 0, 0, 0]
 data_sending = "0,0,0,0,0"
-
+depth = 0
 def initialize(_ip = '192.168.137.1',_port = 8092):
     global client_socket
     port = _port
@@ -58,6 +58,7 @@ def _run_servo():
             servo_values[4] = dataArray[9]
             data_sending = (str(servo_values[0]) + "," + str(servo_values[1]) + "," + str(servo_values[2]) + "," + str(servo_values[3]) + "," + str(servo_values[4]))
             serial_node.write_data(data_sending + "\n")
+            time.sleep(0.1)
 
 def _get_sensors():
     while 1:
@@ -65,6 +66,7 @@ def _get_sensors():
         global serial_node
         global send_data
         global arduino_data
+        global depth
 
         pressure = "0"
         temp_normal = "0"
