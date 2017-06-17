@@ -1,24 +1,23 @@
 #include <Wire.h>
 #include <SoftwareSerial.h>
-#include "TSYS01.h"
 #include <Servo.h>
 
 Servo servoDriver[5];
-SoftwareSerial BTSerial(2, 3); // RX | TX
-TSYS01 sensor;
+SoftwareSerial BTSerial(4, 5); // RX | TX
 String bt_data = String('0');
 char inData[50];
 char inChar=-1;
 byte index = 0;
-int servoPins[5] = {4, 5, 6, 7, 9};
+int servoPins[4] = {9, 7, 8, 10};
 
 void setup() {
   Serial.begin(115200);
   BTSerial.begin(9600);
   Serial.setTimeout(50);
+  pinMode(11, OUTPUT);
   //Wire.begin();
   //sensor.init();
-  for (int i = 0; i < 5; i++){
+  for (int i = 0; i < 4; i++){
     servoDriver[i].attach(servoPins[i]);
   }
 }
@@ -96,7 +95,7 @@ while(Serial.available())
 }
 
 
-  for(int i = 0; i < 5; i++)
+  for(int i = 0; i < 4; i++)
   {
     //Serial.print(i);
     //Serial.print(":");
@@ -107,9 +106,10 @@ while(Serial.available())
   servoArray[0] = limit(servoArray[0], 1800, 2300);
   servoArray[1] = limit(servoArray[1], 500, 2400);
   servoArray[2] = limit(servoArray[2], 500, 2400);
-  servoArray[3] = limit(servoArray[3], 1000, 1700);
-  servoArray[4] = limit(servoArray[4], 1000, 1700);
-
+  servoArray[3] = limit(servoArray[3], 1200, 2000);
+  //servoArray[4] = limit(servoArray[4], 1000, 1700);
+  if(servoArray[4] == 0) { digitalWrite(11, LOW); }
+  else { digitalWrite(11, HIGH); }
 
   // Serial.println("");
 
